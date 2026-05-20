@@ -555,6 +555,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
                     hash_key = create_message_correlation_key(channel_idx, timestamp)
 
+                    route_type = event.payload.get("route_type")
                     rx_log_entry = {
                         "channel_idx": channel_idx,
                         "channel_name": decrypted_data.get("channel_name"),
@@ -565,6 +566,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                         "path_len": decrypted_data.get("path_len"),
                         "path": decrypted_data.get("path"),
                         "channel_hash": decrypted_data.get("channel_hash"),
+                        "route_type": route_type,
+                        "route_typename": event.payload.get("route_typename"),
+                        "region_scope": route_type == 0,
                     }
 
                     if hash_key in coordinator._pending_rx_logs:
