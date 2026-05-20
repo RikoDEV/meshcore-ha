@@ -561,17 +561,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     route_type = event.payload.get("route_type")
                     flood_scope = None
                     if route_type == 0:
-                        raw_hex = event.payload.get("raw_hex", "")
+                        # 'payload' hex starts at the header byte;
+                        # 'raw_hex' has 2 framing bytes before the header.
+                        pkt_hex = event.payload.get("payload", "")
                         pkt_payload = event.payload.get("pkt_payload", b"")
                         payload_type_int = event.payload.get("payload_type", 0)
                         scope_keys = load_flood_scope_keys(
                             coordinator.config_entry.data.get(CONF_FLOOD_SCOPES, "")
                         )
-                        if scope_keys and raw_hex and pkt_payload:
+                        if scope_keys and pkt_hex and pkt_payload:
                             try:
-                                raw_bytes = bytes.fromhex(raw_hex) if isinstance(raw_hex, str) else raw_hex
-                                if len(raw_bytes) >= 3:
-                                    transport_code = int.from_bytes(raw_bytes[1:3], "little")
+                                pkt_bytes = bytes.fromhex(pkt_hex) if isinstance(pkt_hex, str) else pkt_hex
+                                # header(1) + transport_codes[0](2 LE) + transport_codes[1](2)
+                                if len(pkt_bytes) >= 3:
+                                    transport_code = int.from_bytes(pkt_bytes[1:3], "little")
                                     flood_scope = match_flood_scope(
                                         transport_code, payload_type_int, pkt_payload, scope_keys
                                     )
