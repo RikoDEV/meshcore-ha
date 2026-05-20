@@ -156,6 +156,9 @@ RX_LOG_CACHE_TTL_SECONDS: Final = 5.0
 # Adaptive poll-wait for incoming channel message RX_LOG correlation
 CONF_ADAPTIVE_POLL_WAIT: Final = "adaptive_poll_wait"
 
+# Flood scope allowlist (comma-separated region names, e.g. "pl-mz, pl-waw")
+CONF_FLOOD_SCOPES: Final = "flood_scopes"
+
 # Sensor availability timeout multiplier
 SENSOR_AVAILABILITY_TIMEOUT_MULTIPLIER: Final = 3
 
